@@ -337,25 +337,7 @@
                 </tbody>
             </table>
             {{ $crms->links() }}
-            <div class="tablaUsuario_Crm" id="tablaUsuario_Crm" style="display: none;" >
-                 <h4>C.R.M. Historial</h4>
-                <table class="table table-striped table-bordered table-hover" id="tablaPacientes">
-                    <thead>
-                    <tr class="info">
-                        <th>Nombre</th>
-                        <th>Creación</th>
-                        <th>Fecha Aviso</th>
-                        <th>Fecha Contacto</th>
-                        <th>Forma Contacto</th>
-                        <th>Estado</th>
-                        <th>Hora</th>
-                    </tr>
-                </thead>
-                    <tbody id="datostablas">
-
-                    </tbody>
-                </table>
-            </div>   
+             
              <div class="tablaUsuario_Ventas" id="tablaUsuario_Ventas" style="display: none;" >
                  <h4>Historial Ventas</h4>
                 <table class="table table-striped table-bordered table-hover" id="tablaPacientesV">
@@ -373,6 +355,25 @@
                     </tbody>
                 </table>
             </div>  
+             <div class="tablaUsuario_Crm" id="tablaUsuario_Crm" style="display: none;" >
+                 <h4>C.R.M. Historial</h4>
+                <table class="table table-striped table-bordered table-hover" id="tablaPacientes">
+                    <thead>
+                    <tr class="info">
+                        <th>Nombre</th>
+                        <th>Creación</th>
+                        <th>Fecha Aviso</th>
+                        <th>Fecha Contacto</th>
+                        <th>Forma Contacto</th>
+                        <th>Estado</th>
+                        <th>Hora</th>
+                    </tr>
+                </thead>
+                    <tbody id="datostablas">
+
+                    </tbody>
+                </table>
+            </div> 
         </div>
         <div class="card-footer">
   
