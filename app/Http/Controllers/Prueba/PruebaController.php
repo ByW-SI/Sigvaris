@@ -49,6 +49,10 @@ class PruebaController extends Controller
         }
     }
 
+   
+
+
+
     public function CrmVentasTotales()
     {
         $Ventas = Venta::get();
@@ -75,6 +79,7 @@ class PruebaController extends Controller
                 )
             );
             $CRM->save();
+
         }
     }
 }

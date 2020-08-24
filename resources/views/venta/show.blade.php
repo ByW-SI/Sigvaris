@@ -26,6 +26,33 @@
                         <input type="text" class="form-control" value="{{$venta->paciente->fullname}}" readonly="">
                     </div>
                     <div class="col-4 form-group">
+                        <label class="control-label">Factura:</label>
+                        <input type="text" class="form-control" value="{{ $venta->requiere_factura == 1 ? 'SI' : 'NO' }}" readonly="">
+                    </div>
+                    <div class="col-4 form-group">
+                        <label class="control-label">Folio de damage:</label>
+                        @php
+                        $Folio = $venta->productos()->pluck('venta_id');
+                        $indice =$venta->paciente_id;
+                        $id=$venta->paciente_id ;
+                         $texto = strval($origen);
+                         $resultado = str_replace("origin_id", "Folio de origen", $texto);
+
+                                if($resultado =='[{"Folio de origen":null}]'){
+                                    $resultado='No es de Damage';
+                                }else{
+                                     $resultado = substr($resultado,20,-2);
+                                     $resultado = preg_replace("/[^a-zA-Z0-9]+/", "", $resultado);
+                                     
+                                }
+                        @endphp
+                        <input type="text" class="form-control" value="{{$resultado}}" readonly="">
+                    </div>
+                    <div class="col-4 form-group">
+                        <label class="control-label">Comentario:</label>
+                        <input type="text" class="form-control" value="{{$venta->comentario}}" readonly="">
+                    </div>
+                    <div class="col-4 form-group">
                         <label class="control-label">Folio:</label>
                         <input type="number" class="form-control" value="{{$venta->id}}" readonly="">
                     </div>
@@ -135,6 +162,7 @@
 
 </div>
 </div>
+<br>
 
 
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>

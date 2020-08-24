@@ -242,3 +242,4 @@ Route::get('pruebasJC','Prueba\PruebaController@FacturasRFC');
 // APIS
 Route::get('api/empleados/fitters/','Empleado\EmpleadoController@getEmpleadosFitters');
 Route::get('api/empleados/fitters/{oficina}','Empleado\EmpleadoController@getEmpleadosFittersByOficina');
+//fecha del servidor

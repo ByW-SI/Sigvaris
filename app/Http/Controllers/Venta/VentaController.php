@@ -13,6 +13,8 @@ use App\Empleado;
 use App\Crm;
 use App\DatoFiscal;
 use App\Folio;
+use App\Banco;
+use App\Factura;
 use App\Sigpesosventa;
 use App\HistorialCambioVenta;
 use App\ProductoDamage;
@@ -76,11 +78,12 @@ class VentaController extends Controller
      */
     public function create()
     {
-        $hoy = Carbon::now()->toDateString();
+        $hoy = Carbon::now('America/Mexico_City')->toDateString();
         $descuentos = Descuento::where('inicio', '<=', $hoy)->where('fin', '>=', $hoy)->get();
         $productos = Producto::where('id', '<', 1)->get();
         $pacientes = Paciente::where('id', '<', 1)->get();
         $empleadosFitter = Empleado::fitters()->get();
+        $Bancos = Banco::get();
         return view('venta.create', [
             'pacientes' => null,
             'paciente' => null,
@@ -88,7 +91,8 @@ class VentaController extends Controller
             'productos' => $productos,
             'folio' => Venta::count() + 1,
             'empleadosFitter' => $empleadosFitter,
-            'Folios' => Folio::get()
+            'Folios' => Folio::get(),
+            'Bancos' => $Bancos
         ]);
     }
 
@@ -100,6 +104,7 @@ class VentaController extends Controller
         $productos = Producto::where('id', '<', 1)->get();
         $pacientes = Paciente::get();
         $empleadosFitter = Empleado::fitters()->get();
+        $Bancos = Banco::get();
         //dd($pacientes);
         return view('venta.create', [
             'pacientes' => $pacientes,
@@ -108,7 +113,8 @@ class VentaController extends Controller
             'productos' => $productos,
             'folio' => Venta::count() + 1,
             'empleadosFitter' => $empleadosFitter,
-            'Folios' => Folio::get()
+            'Folios' => Folio::get(),
+            'Bancos' => $Bancos
         ]);
     }
     /**
@@ -167,7 +173,7 @@ class VentaController extends Controller
 
         if ($request->facturar == "1") {
             $venta->update(['requiere_factura' => 1]);
-            DatoFiscal::updateOrCreate(
+                DatoFiscal::updateOrCreate(
                 ['paciente_id' => $request->paciente_id],
                 [
                     'calle' => $request->calle,
@@ -176,6 +182,7 @@ class VentaController extends Controller
                     'regimen_fiscal' => $request->regimen_fiscal,
                     'correo' => $request->correo,
                     'rfc' => $request->rfc,
+                    'homoclave'=> $request->homoclave,
                     'num_ext' => $request->num_ext,
                     'num_int' => $request->num_int,
                     'codigo_postal' => $request->codigo_postal,
@@ -183,9 +190,26 @@ class VentaController extends Controller
                     'alcaldia_o_municipio' => $request->alcaldia_o_municipio,
                     'uso_cfdi' => $request->uso_cfdi
                 ]
-            );
+             );
+            $Factura = new Factura(
+                    array(
+                    'venta_id'=>$venta->id,
+                    'nombre'=>$venta->paciente->getFullnameAttribute(),
+                    'rfc'=>$request->rfc,
+                    'regimen_fiscal'=> $request->regimen_fiscal,
+                    'correo'=>$request->correo,
+                    'calle'=> $request->calle,
+                    'num_ext'=>$request->num_ext,
+                    'num_int'=>$request->num_int,      
+                    'ciudad'=>$request->ciudad,
+                    'municipio'=>$request->alcaldia_o_municipio,              
+                    'cp' =>$request->codigo_postal
+            )
+          );
+          $Factura->save();  
         }
 
+            
         $CRM = new Crm(
             array(
                 'paciente_id' => $request->input('paciente_id'),
@@ -232,7 +256,7 @@ class VentaController extends Controller
 
         
         $Paciente=Paciente::where("id",$request->paciente_id)->first();
-        $Paciente->update(['saldo_a_favor' => 0]);
+        $Paciente->update(['saldo_a_favor' => $request->saldo_a_favor]);
         // REDIRIGIR A LAS VENTAS REALIZADAS
         return redirect()->route('ventas.index');
     }
@@ -245,7 +269,9 @@ class VentaController extends Controller
      */
     public function show(Venta $venta)
     {
-        return view('venta.show', ['venta' => $venta]);
+        $origen = DB::table('productos_damage')->select('origin_id')->where('destinate_id',$venta->id)->get();
+
+        return view('venta.show', ['venta' => $venta,'origen'=>$origen]);
     }
 
     /**
@@ -502,6 +528,8 @@ class VentaController extends Controller
         $productosDamage->producto_id = $request->productoDevuelto;
         $productosDamage->tipo_damage = $request->TipoDamage;
         $productosDamage->user_id = Auth::user()->id;
+        $productosDamage->destinate_id =$request->folio_nuevo;
+        $productosDamage->origin_id = $request->VentaAnterior;
         $productosDamage->descripcion = $request->DesDamage;
         $productosDamage->save();
 

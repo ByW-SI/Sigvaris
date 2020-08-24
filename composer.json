@@ -17,6 +17,7 @@
         "mike42/escpos-php": "^2.1",
         "uxweb/sweet-alert": "^2.0",
         "kartik-v/bootstrap-fileinput": "dev-master"
+       
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

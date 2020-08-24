@@ -152,8 +152,7 @@
                                             <div class="form-group col-4 offset-4">
                                                     <label for="actual">Paciente</label>
                                                     <input type="text" class="form-control" 
-                                                name="nombre" value="" readonly="" id="nombre"> 
-                                                    
+                                                    name="nombre" value="" readonly="" id="nombre">                                                  
                                                     <input type="text" class="paciente_id form-control" id="paciente_id"
                                                 name="paciente_id" value="" readonly="" style="display: none;">
                                                 </div>
@@ -500,10 +499,12 @@
         var crm = JSON.parse(data);
         var paciente = JSON.parse(data2);
         var estado = JSON.parse(data3);
-        
+         
         //$('#estado_id').show();
         $('.paciente_id').val(paciente.id);
-        $('#nombre').val(paciente.nombre);
+        $('#nombre').val(paciente.nombre +' '+ paciente.paterno +' '+ paciente.materno );
+        $('#paterno').val(paciente.paterno);
+        $('#materno').val(paciente.materno);
         $('#telefono').val(paciente.telefono);
         $('#celular').val(paciente.celular);
         $('#mail').val(paciente.mail);
@@ -551,7 +552,7 @@ $(document).on('click', '.botonMostrarCrm', function(){
       // Obtener la referencia del elemento body
       // Crea un elemento <table> y un elemento <tbody>
       //var crm = JSON.parse(data3);
-      $('#tablaUsuario_Crm').show();
+      $('#tablaUsuario_Crm').show("slow");
       var paciente = JSON.parse(data1);
       // Obtener la referencia del elemento body
      $.ajax({

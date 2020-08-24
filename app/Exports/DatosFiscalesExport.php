@@ -32,14 +32,17 @@ class DatosFiscalesExport implements FromCollection, WithHeadings
             ->flatten()
             ->map(function ($producto) {
                 $venta = Venta::find($producto->pivot->venta_id);
+                $array = array($venta->paciente->datoFiscal->rfc,$venta->paciente->datoFiscal->homoclave);
+                $RFC_ = implode("", $array);
+                
                 return [
                     'paciente' => $venta->paciente->datoFiscal->paciente ? $venta->paciente->datoFiscal->paciente->fullname : '',
                     'tipo_persona' => $venta->paciente->datoFiscal->tipo_persona,
                     'nombre_o_razon_social' => $venta->paciente->datoFiscal->nombre_o_razon_social,
                     'regimen_fiscal' => $venta->paciente->datoFiscal->regimen_fiscal,
-                    'homoclave' => $venta->paciente->datoFiscal->homoclave,
+                    //'homoclave' => $venta->paciente->datoFiscal->homoclave,
                     'correo' => $venta->paciente->datoFiscal->correo,
-                    'rfc' => $venta->paciente->datoFiscal->rfc,
+                    'rfc' => $RFC_,
                     'calle' => $venta->paciente->datoFiscal->calle,
                     'num_ext' => $venta->paciente->datoFiscal->num_ext,
                     'num_int' => $venta->paciente->datoFiscal->num_int,
@@ -51,12 +54,12 @@ class DatosFiscalesExport implements FromCollection, WithHeadings
                     'porcentaje_descuento' => '',
                     'nombre_descuento' => '',
                     'uso_cfdi' => $venta->paciente->datoFiscal->uso_cfdi,
-                    'fecha' => $venta->fecha, 
-                    'precio_sin_iva' => $producto->precio_publico,
-                    'precio_con_iva' => $producto->precio_publico_iva,
-                    'descuento' => $venta->promocion ? $venta->promocion->descuento_de . " (" . $venta->promocion->unidad_descuento . ")" : '',
-                    'cantidad' => $producto->pivot->cantidad,
-                    'sku' => $producto->sku,
+                    'fecha' => substr($venta->fecha,0,11)
+                    // 'precio_sin_iva' => $producto->precio_publico,
+                    // 'precio_con_iva' => $producto->precio_publico_iva,
+                    // 'descuento' => $venta->promocion ? $venta->promocion->descuento_de . " (" . $venta->promocion->unidad_descuento . ")" : '',
+                    // 'cantidad' => $producto->pivot->cantidad,
+                    // 'sku' => $producto->sku,
                 ];
             });
     }
@@ -68,7 +71,7 @@ class DatosFiscalesExport implements FromCollection, WithHeadings
             'TIPO PERSONA',
             'NOMBRE O RAZÓN SOCIAL',
             'REGIMEN FISCAL',
-            'HOMOCLAVE',
+            //'HOMOCLAVE',
             'CORREO',
             'RFC',
             'CALLE',
@@ -82,12 +85,12 @@ class DatosFiscalesExport implements FromCollection, WithHeadings
             'PORCENTAJE DESCUENTO',
             'NOMBRE DESCUENTO',
             'USO CFDI',
-            'FECHA',
-            'PRECIO SIN IVA',
-            'PRECIO CON IVA',
-            'DESCUENTO',
-            'CANTIDAD',
-            'SKU'
+            'FECHA'
+            // 'PRECIO SIN IVA',
+            // 'PRECIO CON IVA',
+            // 'DESCUENTO',
+            // 'CANTIDAD',
+            // 'SKU'
         ];
     }
 }

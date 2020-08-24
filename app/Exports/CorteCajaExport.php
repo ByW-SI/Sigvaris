@@ -19,8 +19,10 @@ class CorteCajaExport implements FromCollection, WithHeadings, WithTitle
      */
     public function collection()
     {
+            $now = Carbon::now('America/Mexico_City');
         $index=0;
-        return Venta::where('fecha', '>=', date('Y-m-d'))
+       // dd($now);
+        return Venta::where('fecha', '>=', $now->format('Y-m-d'))
             ->where('oficina_id',2)
             ->get()
             //->pluck('productos')
@@ -31,6 +33,7 @@ class CorteCajaExport implements FromCollection, WithHeadings, WithTitle
 
                 //dd($Venta->productos()->pluck('cantidad')->sum());
                 $index++;
+                //dd($Venta->requiere_factura);
                 return collect([
                     date('Y-m-d'),
                     Carbon::parse($Venta->fecha)->format('h:i:s'),
@@ -54,8 +57,8 @@ class CorteCajaExport implements FromCollection, WithHeadings, WithTitle
                     $Venta->banco!= null ? $Venta->banco !="AMEX"? $Venta->digitos_targeta:"" :"",
 
                     "",
-
-                    Factura::where('venta_id',$Venta->id)->exists()? "Si":"No",
+                    $Venta->requiere_factura == 1 ? "SI":"NO",
+                    //Factura::where('venta_id',$Venta->id)->exists()? "Si":"No",
                     $Venta->empleado != null ? $Venta->empleado->nombre : "",
                     "",
                     "0",
@@ -93,8 +96,8 @@ class CorteCajaExport implements FromCollection, WithHeadings, WithTitle
             'Pago depósito',
             
             'FACTURA',
-            'Genero',
-            'Envio',
+            'Generó',
+            'Envió',
 
             'Devolución en efectivo',
             'Cambio fisico',

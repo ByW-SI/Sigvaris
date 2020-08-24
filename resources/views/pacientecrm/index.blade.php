@@ -153,7 +153,7 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="submit" form="ver_crm" id="cerrar_ver_crm_modal" class="btn btn-danger">Cerrar</button>
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
                                     </div>
                                 </div>
                             </div>
@@ -170,27 +170,29 @@
                         <th>Fecha Aviso</th>
                         <th>Fecha Contacto</th>
                         <th>Forma Contacto</th>
-                        <th>Estado</th>
-                        <th>Hora</th>
+                        <th>Comentarios</th>        
                         <th>Ver</th>
                     </tr>
                 </thead>
                 <tbody>
+
                     @if(empty($paciente->crms))
                     <h5>No hay ningún crm registrado</h5>
                     @else
                     @foreach($paciente->crms as $crm)
-                    <tr>
-                        <td>{{$crm->created_at}}</td>
-                        <td>{{$crm->fecha_aviso}}</td>
-                        <td>{{$crm->fecha_contacto}}</td>
-                        <td>{{$crm->forma_contacto}}</td>
-                        <td>{{$crm->estado->nombre}}</td>
-                        <td>{{$crm->hora}}</td>
-                        <td>
+
+                           <tr>
+                                 <td>{{$crm->created_at}}</td>
+                                 <td>{{$crm->fecha_aviso}}</td>
+                                 <td>{{$crm->fecha_contacto}}</td>
+                                 <td>{{$crm->paciente['telefono']}}</td>
+                                 <td>{{$crm->comentarios}}</td>
+                                 
+                         <td>
                             <button type="button" onclick="mostrarCrm('{{$crm}}')" data-toggle="modal" data-target="#ver_crm_modal" class="btn btn-primary">Ver</button>
                         </td>
                     </tr>
+                    
                     @endforeach
                     @endif
                 </tbody>

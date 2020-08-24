@@ -88,6 +88,11 @@ class Venta extends Model
         return $this->hasMany('App\Devolucion');
     }
 
+     public function producto_damage()
+    {
+        return $this->belongsTo('App\ProductoDamage', 'productos_damage');
+    }
+
     /**
      * ==========
      * ATTRIBUTES

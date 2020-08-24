@@ -19,7 +19,8 @@ class ClienteVentasExport implements FromCollection, WithHeadings,WithTitle
      */
     public function collection()
     {
-        return Venta::where('fecha', '>=', date('Y-m-d'))
+        $now = Carbon::now('America/Mexico_City');
+        return Venta::where('fecha', '>=',$now->format('Y-m-d'))
             ->where('oficina_id',2)
             ->get()
             //->pluck('productos')
@@ -28,8 +29,13 @@ class ClienteVentasExport implements FromCollection, WithHeadings,WithTitle
                 
                 function ($Venta) {
                     $SkuRe="";
+                    $contador = $Venta->productos()->pluck('cantidad');
+                    $aux = 0;
                     foreach ($Venta->productos as $producto ) {
-                        $SkuRe.=$producto->sku." ";
+                       
+                        $SkuRe.=$producto->sku." - ".$contador[$aux]."| ";
+                        $aux++;
+                        
                     }
                 return collect([
                     $Venta->id,
@@ -41,6 +47,7 @@ class ClienteVentasExport implements FromCollection, WithHeadings,WithTitle
                     $Venta->paciente->ventas()->count() == 1?  "1":"2",
                     $Venta->productos != null ? $Venta->productos()->pluck('cantidad')->sum():"",
                     $SkuRe,
+                    "",
                     "",
                     "",
                     $Venta->paciente->mail,
@@ -63,11 +70,13 @@ class ClienteVentasExport implements FromCollection, WithHeadings,WithTitle
             'Numero de visita',
             'Cantidad ',
             'Sku Vendido',
+            'damage',
             'Producto negado ',
             'Estilo negado',
             'mail',
             'telefono',
             'celular'
+
 
 
         ];

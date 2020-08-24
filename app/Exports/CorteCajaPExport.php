@@ -31,6 +31,7 @@ class CorteCajaPExport implements FromCollection, WithHeadings, WithTitle
 
                 //dd($Venta->productos()->pluck('cantidad')->sum());
                 $index++;
+                dd($Venta->requiere_factura);
                 return collect([
                     date('Y-m-d'),
                     Carbon::parse($Venta->fecha)->format('h:i:s'),
@@ -47,15 +48,17 @@ class CorteCajaPExport implements FromCollection, WithHeadings, WithTitle
                     $Venta->sigpesos,
 
 
-                    $Venta->banco!= null ? $Venta->banco =="BANCO"? $Venta->PagoTarjeta:"" :"",
-                    $Venta->banco!= null ? $Venta->banco =="BANCO"? $Venta->digitos_targeta:"" :"",
-
                     $Venta->banco!= null ? $Venta->banco !="AMEX"? $Venta->PagoTarjeta:"" :"",
                     $Venta->banco!= null ? $Venta->banco !="AMEX"? $Venta->digitos_targeta:"" :"",
 
+                    $Venta->banco!= null ? $Venta->banco =="AMEX"? $Venta->PagoTarjeta:"" :"",
+                    $Venta->banco!= null ? $Venta->banco =="AMEX"? $Venta->digitos_targeta:"" :"",
+
                     "",
 
-                    Factura::where('venta_id',$Venta->id)->exists()? "Si":"No",
+                    $Venta->requiere_factura==1? "Si":"No",
+
+                    //Factura::where('venta_id',$Venta->id)->exists()? "Si":"No",
                     $Venta->empleado != null ? $Venta->empleado->nombre : "",
                     "",
                     "0",

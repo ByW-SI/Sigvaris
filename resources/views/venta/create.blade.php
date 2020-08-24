@@ -234,7 +234,7 @@
                                             <select class="form-control" name="tipoPago" id="tipoPago">
                                                 <option value="0">Selecciona...</option>
                                                 <option value="1">Efectivo</option>
-                                                <option value="2">Tajeta</option>
+                                                <option value="2">Tarjeta</option>
                                                 <option value="3">Combinado</option>
                                                 <option value="4">Sigpesos</option>
                                             </select>
@@ -245,9 +245,9 @@
                                             style="display: none;">
                                             <label for="banco" class="text-uppercase text-muted">Banco</label>
                                             <select class="form-control" name="banco" id="banco">
-                                                <option value="">Selecciona...</option>
-                                                <option value="SANTANDER">Banco</option>
-                                                <option value="AMEX">Amex</option>
+                                                @foreach ($Bancos as $Banco)
+                                                <option value="{{$Banco->nombre}}">{{$Banco->nombre}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                         {{-- INPUT numeros de  tarjeta --}}
@@ -337,13 +337,18 @@
                                     <div class="row">
                                         <div class="col-4 form-group">
                                             <label for="" class="text-uppercase text-muted">Paciente: </label>
-                                            <input type="text" class="form-control" id="inputNombrePaciente" required
+                                        <input type="text" class="form-control" id="inputNombrePaciente" required
                                                 readonly>
                                         </div>
                                         <div class="col-4 form-group">
                                             <label for="" class="text-uppercase text-muted">Fecha: </label>
-                                            <input type="date" name="fecha" class="form-control" readonly=""
-                                                value="{{date('Y-m-d')}}" required="">
+                                            @php
+                                               $date =  new DateTime(); 
+                                                $date->modify('-5 hours');
+                                               
+                                            @endphp
+                                            
+                                            <input type="text" name="fecha" class="form-control" readonly=""value="{{$date->format('Y-m-d H:i:s')}}" required="">
                                         </div>
                                         <div class="col-4 form-group">
                                             <label for="" class="text-uppercase text-muted">Folio: </label>
@@ -470,6 +475,10 @@
                                         <div class="col-12 col-md-3 mt-3">
                                             <label for="" class="text-uppercase text-muted">RFC</label>
                                             <input type="text" class="form-control" id="rfc" name="rfc">
+                                        </div>
+                                        <div class="col-12 col-md-3 mt-3">
+                                            <label for="" class="text-uppercase text-muted">HOMOCLAVE</label>
+                                            <input type="text" class="form-control" id="homoclave" name="homoclave">
                                         </div>
                                         <div class="col-12 col-md-3 mt-3">
                                             <label for="" class="text-uppercase text-muted">CALLE</label>
@@ -679,27 +688,31 @@
     });
 </script>
 
-
+   
 <script type="text/javascript">
     function redondear(){
         $('#total').val(parseFloat($('#total').val()).toFixed(0));
+        
     }
     function sendFormValidador() {
-        console.log("empleado",$('#empleado_id').val());
-    if ($('#empleado_id').val()!="") {
-    if (parseFloat($('#total').val())==(parseFloat($('#PagoTarjeta').val())+parseFloat($('#PagoEfectivo').val()))) {
-        document.getElementById("form-cliente").submit();
-      } else {
-        alert("Valida los campos de forma de pago");
-        return false;
-      }
-
-    }else{
-        alert("Valida el campo de empleado");
-        return false;
-    }
-      
-    }
+        console.log("empleado",$('#empleado_id').val());  
+        console.log("id del paciente: ",$('#empleado_id').val());
+        
+    if ($('#empleado_id').val()!="" && $('#paciente_id').val()) {
+        if (parseFloat($('#total').val())==(parseFloat($('#PagoTarjeta').val())+parseFloat($('#PagoEfectivo').val()))) {
+                document.getElementById("form-cliente").submit();        
+            } 
+            else {
+                 alert("Valida los campos de forma de pago");
+                 return false;
+                 }
+               }
+                 else{
+                 alert("Valida el campo de empleado o paciente");
+                 return false;
+             }
+                   
+    } 
 
     function on(){
          $('#descuento').val(0);
@@ -793,7 +806,7 @@
         }
     }
 
-</script>
+</script>       
 <script>
     
     function agregarProducto(p){
@@ -951,6 +964,7 @@
             var sigpesos=parseInt($('#sigpesos_usar').val());
             var desCumple=parseFloat($('#descuentoCumple').val());
             var saldoAFavor=parseFloat($('#saldoAFavor').val());
+             saldoAFavor = sigpesos;
             //let getIva = (($('#subtotal').val()-des-desCumple)*0.16);
             //var iva=parseFloat($('#iva').val(getIva.toFixed(2)));
             var getIva = (($('#subtotal').val()-des-desCumple)*0.16).toFixed(2);
@@ -981,12 +995,13 @@
                 $('#digitos_targeta').required;
                 
                 
-                $('#sigpesos_usar').val(0);
+                //$('#sigpesos_usar').val(0);
                 var subtotal=parseFloat($('#subtotal').val());
                 var des=parseFloat($('#descuento').val());
                 var sigpesos=parseInt($('#sigpesos_usar').val());
                 var desCumple=parseFloat($('#descuentoCumple').val());
                 var saldoAFavor=parseFloat($('#saldoAFavor').val());
+                 saldoAFavor = sigpesos;
                 //let getIva = (($('#subtotal').val()-des-desCumple)*0.16);
                 //var iva=parseFloat($('#iva').val(getIva.toFixed(2)));
                 var getIva = (($('#subtotal').val()-des-desCumple)*0.16).toFixed(2);
@@ -998,12 +1013,13 @@
                 }else{
                     $('#total').val(0);
                 }
-                console.log('TOTAL ACTUALIZADO',$('#total').val());
+                console.log('TOTAL ACTUALIZADO DESDE TARJETA',$('#total').val());
 
 
                 $('#PagoTarjeta').val($('#total').val());
 
-            }else if ($('#tipoPago').val()==3) {
+            }
+            else if ($('#tipoPago').val()==3) {
                 $('#PagoEfectivo').val(0);
                 $('#PagoTarjeta').val(0);
 
@@ -1014,7 +1030,14 @@
                 $('#tar10').show();
                 $('#PagoSigpesos').show();
                 $('#digitos_targeta').required;
-            }else if ($('#tipoPago').val()==1) {
+                var sigpesos=parseInt($('#sigpesos_usar').val());
+                var saldoAFavor=parseFloat($('#saldoAFavor').val());
+                saldoAFavor = sigpesos;
+                console.log('TOTAL ACTUALIZADO DESDE COMBINADO',$('#total').val());
+                console.log('Sipesos:',sigpesos);
+               
+            }
+            else if ($('#tipoPago').val()==1) {
                 $('#PagoEfectivo').val(0);
                 $('#PagoTarjeta').val(0);
 
@@ -1028,14 +1051,15 @@
                 $('#PagoSigpesos').hide();
 
 
-                $('#sigpesos_usar').val(0);
+                //$('#sigpesos_usar').val(0);
                 var subtotal=parseFloat($('#subtotal').val());
                 var des=parseFloat($('#descuento').val());
                 var sigpesos=parseInt($('#sigpesos_usar').val());
                 var desCumple=parseFloat($('#descuentoCumple').val());
                 //let getIva = (($('#subtotal').val()-des-desCumple)*0.16);
-                //var iva=parseFloat($('#iva').val(getIva.toFixed(2)));
+                //var iva=parseFloat($('#iva').val(getIva.toFixed(2)));                   
                  var saldoAFavor=parseFloat($('#saldoAFavor').val());
+                 var saldoAFavor = sigpesos;
                 var getIva = (($('#subtotal').val()-des-desCumple)*0.16).toFixed(2);
                 $('#iva').val(getIva);
                 var iva=getIva;
@@ -1045,12 +1069,14 @@
                 }else{
                     $('#total').val(0);
                 }
-                console.log('TOTAL ACTUALIZADO',$('#total').val());
-
+                console.log('TOTAL ACTUALIZADO DESDE EFECTIVO',$('#total').val());
+                console.log('Saldo a favor:',saldoAFavor);
+                
 
                 $('#PagoEfectivo').val($('#total').val());
 
-            }else if($('#tipoPago').val()==4){
+            }
+            else if($('#tipoPago').val()==4){
                 $('#PagoEfectivo').val(0);
                 $('#PagoTarjeta').val(0);
 
@@ -1062,7 +1088,36 @@
                 $('#tar4').hide();
                 $('#tar5').hide();
                 $('#tar10').hide();
-            }else{
+
+                    //Agregando lineas para actualizar el sigpesos                   
+                var subtotal=parseFloat($('#subtotal').val());
+                var des=parseFloat($('#descuento').val());
+                var sigpesos=parseInt($('#sigpesos_usar').val());
+                var desCumple=parseFloat($('#descuentoCumple').val());
+                var saldoAFavor=parseFloat($('#saldoAFavor').val());
+                var saldoAFavor = sigpesos;
+                //let getIva = (($('#subtotal').val()-des-desCumple)*0.16);
+                //var iva=parseFloat($('#iva').val(getIva.toFixed(2)));
+                var getIva = (($('#subtotal').val()-des-desCumple)*0.16).toFixed(2);
+                console.log(sigpesos);
+                $('#iva').val(getIva);
+                var iva=getIva;
+                var aux=parseFloat(subtotal)+parseFloat(iva)-parseFloat(des)-parseFloat(sigpesos)-parseFloat(desCumple)-parseFloat(saldoAFavor);
+                if (aux>0) {
+                    $('#total').val(aux.toFixed(2));
+                }else{
+                    $('#total').val(0);
+                }
+                console.log('TOTAL ACTUALIZADO EN SIGPESOS',$('#total').val());
+               console.log('Saldo a favor:',saldoAFavor);
+              
+
+
+            }
+
+            else
+
+            {
                 $('#PagoEfectivo').val(0);
                 $('#PagoTarjeta').val(0);
 
@@ -1081,9 +1136,11 @@
                 var sigpesos=parseInt($('#sigpesos_usar').val());
                 var desCumple=parseFloat($('#descuentoCumple').val());
                 var saldoAFavor=parseFloat($('#saldoAFavor').val());
+                var saldoAFavor = sigpesos;
                 //let getIva = (($('#subtotal').val()-des-desCumple)*0.16);
                 //var iva=parseFloat($('#iva').val(getIva.toFixed(2)));
                 var getIva = (($('#subtotal').val()-des-desCumple)*0.16).toFixed(2);
+                console.log(sigpesos);
                 $('#iva').val(getIva);
                 var iva=getIva;
                 var aux=parseFloat(subtotal)+parseFloat(iva)-parseFloat(des)-parseFloat(sigpesos)-parseFloat(desCumple)-parseFloat(saldoAFavor);
@@ -1092,7 +1149,8 @@
                 }else{
                     $('#total').val(0);
                 }
-                console.log('TOTAL ACTUALIZADO',$('#total').val());
+                console.log('TOTAL ACTUALIZADO EN SIGPESOS',$('#total').val());
+                console.log('Saldo a favor:',saldoAFavor);
 
             }
 
@@ -1141,6 +1199,7 @@
             var sigpesos=parseInt($('#sigpesos_usar').val());
             var desCumple=parseFloat($('#descuentoCumple').val());
             var saldoAFavor=parseFloat($('#saldoAFavor').val());
+            var saldoAFavor = sigpesos;
             //let getIva = (($('#subtotal').val()-des-desCumple)*0.16);
             //var iva=parseFloat($('#iva').val(getIva.toFixed(2)));
             var getIva = (($('#subtotal').val()-des-desCumple)*0.16).toFixed(2);
@@ -1186,6 +1245,7 @@
             var sigpesos=parseInt($('#sigpesos_usar').val());
             var desCumple=parseFloat($('#descuentoCumple').val());
             var saldoAFavor=parseFloat($('#saldoAFavor').val());
+            var saldoAFavor = sigpesos;
             //let getIva = (($('#subtotal').val()-des-desCumple)*0.16);
             //var iva=parseFloat($('#iva').val(getIva.toFixed(2)));
             var getIva = (($('#subtotal').val()-des-desCumple)*0.16).toFixed(2);
@@ -1233,6 +1293,7 @@
                             //var iva=parseFloat($('#iva').val(getIva.toFixed(2)));
                             var getIva = (($('#subtotal').val()-des-desCumple)*0.16).toFixed(2);
                             var saldoAFavor=parseFloat($('#saldoAFavor').val());
+                            var saldoAFavor = sigpesos;
                             $('#iva').val(getIva);
                             var iva=getIva;
                             var aux=parseFloat(subtotal)+parseFloat(iva)-parseFloat(des)-parseFloat(sigpesos)-parseFloat(desCumple)-parseFloat(saldoAFavor);
@@ -1498,11 +1559,13 @@
                 $('#regimeFiscal').val(datos_fiscales.datosFiscales.regimen_fiscal);
                 $('#correo').val(datos_fiscales.datosFiscales.correo);
                 $('#rfc').val(datos_fiscales.datosFiscales.rfc);
+                $('#homoclave').val(datos_fiscales.datosFiscales.homoclave);
                 $('#calle').val(datos_fiscales.datosFiscales.calle);
                 $('#num_ext').val(datos_fiscales.datosFiscales.num_ext);
                 $('#num_int').val(datos_fiscales.datosFiscales.num_int);
                 $('#codigo_postal').val(datos_fiscales.datosFiscales.codigo_postal);
                 $('#ciudad').val(datos_fiscales.datosFiscales.ciudad);
+                $('#homoclave').val(datos_fiscales.datosFiscales.homoclave);
                 $('#alcaldia_o_municipio').val(datos_fiscales.datosFiscales.alcaldia_o_municipio);
                 $('#uso_cfdi').val(datos_fiscales.datosFiscales.uso_cfdi);
                 }
@@ -1637,6 +1700,7 @@
         //let getIva = (($('#subtotal').val()-des-desCumple)*0.16);
         //var iva=parseFloat($('#iva').val(getIva.toFixed(2)));
         var saldoAFavor=parseFloat($('#saldoAFavor').val());
+        var saldoAFavor = sigpesos;
         var getIva = (($('#subtotal').val()-des-desCumple)*0.16).toFixed(2);
         $('#iva').val(getIva);
         var iva=getIva; 
@@ -1687,7 +1751,7 @@
    
 
 </script>
-
+@else
 @endif
 @endsection
 

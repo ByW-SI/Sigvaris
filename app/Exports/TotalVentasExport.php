@@ -19,7 +19,8 @@ class TotalVentasExport implements FromCollection, WithHeadings, WithTitle
      */
     public function collection()
     {
-        $Ventas=Venta::where('fecha', '>=', date('Y-m-d'))
+        $now = Carbon::now('America/Mexico_City');
+        $Ventas=Venta::where('fecha', '>=', $now->format('Y-m-d'))
             ->where('oficina_id',2)
             ->get();
         $TotalVentas=$Ventas->count();
@@ -71,11 +72,11 @@ class TotalVentasExport implements FromCollection, WithHeadings, WithTitle
     {
         return [
             'Total de ventas',
-            'Ventas Sin iva',
             'Ventas Con iva',
+            'Ventas Sin iva',
             'Numero total de pacientes',
             'Numero total de pacientes nuevos',
-            'Numero total de pacientes recurrentes',
+            'Numero total de pacientes recompra',
             'Numero total de doctores recomendaron'
 
 
